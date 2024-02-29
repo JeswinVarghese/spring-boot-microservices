@@ -104,8 +104,9 @@
 
 		<module>discovery-service</module>
 		<module>apigateway-service</module>
+        <module>Notification-service</module>
 
-	</modules>
+    </modules>
 
 	<dependencyManagement>
 

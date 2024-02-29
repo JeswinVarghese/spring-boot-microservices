@@ -4,7 +4,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import com.example.microservice.orderservice.event.OrderPlacedEvent;
 import org.modelmapper.ModelMapper;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -27,6 +29,8 @@ public class OrderServiceImpl implements OrderService {
 
 	private final WebClient.Builder webClientBuilder;
 
+	private final KafkaTemplate<String,OrderPlacedEvent> kafkaTemplate;
+
 	@Override
 	public String placeOrder(OrderRequest orderRequest) {
 		Order order = modelMapper.map(orderRequest, Order.class);
@@ -46,6 +50,7 @@ public class OrderServiceImpl implements OrderService {
 		boolean isInStock = Arrays.stream(inventoryResponseArray).allMatch(InventoryResponse::getIsInStock);
 		if(isInStock) {
 			orderRepository.save(order);
+			kafkaTemplate.send("notificationTopic", new OrderPlacedEvent(order.getOrderNumber(),order.getName(),order.getEmailAddress()));
 			return "Order placed successfully";
 		}
 		else {

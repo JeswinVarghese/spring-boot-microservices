@@ -12,5 +12,7 @@ import lombok.NoArgsConstructor;
 public class OrderRequest {
 	
 	private List<OrderLineItemsDto> orderLineItems;
+	private String name;
+	private String emailAddress;
 
 }
